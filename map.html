@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Know your India</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+	<!--link rel="stylesheet/less" href="less/bootstrap.less" type="text/css" /-->
+	<!--link rel="stylesheet/less" href="less/responsive.less" type="text/css" /-->
+	<!--script src="js/less-1.3.3.min.js"></script-->
+	<!--append ‘#!watch’ to the browser URL, then refresh the page. -->
+	
+	<!-- CSS --> 
+	<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/qtip.css">
+	<link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
+	<!-- <link rel="stylesheet" type="text/css" href="css/nav.css"> --> 
+
+  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+  <![endif]-->
+  
+	<!-- JS -->
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js">"></script>
+	<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+	<script src="js/raphael.min.js"></script>
+    <script src="js/kartograph.min.js"></script>
+	<script src="js/chroma.min.js"></script>
+	<script src="js/jquery.dataTables.min.js"></script>
+	<script src="js/jquery.qtip.js"></script> 
+
+	<script type="text/javascript">
+	
+	var dataFile ,dataFileName;
+	var key = 'rank';
+	var dispTip='';
+	var table='';
+	var dispTip='';
+	var dispTitle='';
+	var dispData='';
+	var map='';
+	var toolTipData = new Array();
+	var scale = chroma.scale('PuBu').domain([1,35]);
+	
+	//Load the Map	
+	function loadMap(){	
+
+		map = $K.map('#map');	
+		map.loadMap('india.svg', function() {		
+			map.addLayer('state', {
+				styles: {'stroke-width': 0.7}
+				});
+			});
+			
+			//Load Map title and text
+			$(document).ready(function() {
+					$('#dataTitle').html('Map of India')
+					$('#dataText').html( ' This Map is populated based on yourselection and the open data available from the Government of India.Click on the left side bar and have fun!')
+			});
+		};
+	
+	
+	//Load the Color
+	
+	function loadColor(dataFileName){	
+		
+			
+	   // initialize qtip tooltip class
+        $.fn.qtip.defaults.style.classes = 'ui-tooltip-bootstrap';
+        $.fn.qtip.defaults.style.def = false;
+        
+		dataFile = 'data/' + dataFileName;
+
+		//Read the JOSN file and Load the Map
+        $.getJSON(dataFile, function(points) {
+		
+			//Get all display Parameters
+			dispTip = points[0].display;
+			dispData = points[99].display;
+			dispTitle = points[99].state;
+			
+			var scale = chroma.scale('PuBu').domain([1,35]);
+			
+			
+			//Color Layer
+			map.getLayer('state').style('fill', function(data) {
+				return scale(points[data.id].weight);
+			});
+				
+			//Color Border
+			
+			map.getLayer('state').style('stroke', function(data) {
+				return (scale(points[data.id].weight).darker()); 
+			});
+				
+			
+			map.getLayer('state')
+					.on('mouseenter', function(data, path, event) {
+					path.attr('fill', '#FFEDA0');
+			});
+				
+			map.getLayer('state')
+				.on('mouseleave', function(data, path, event) {
+				path.attr('fill', scale(points[data.id].weight));
+			});	
+			
+			//Add ToolTip
+
+			map.getLayer('state').tooltips(function(data) {
+				return points[data.id].state + " " + dispTip +":" + points[data.id].display ;
+			});
+			
+			
+			//Load Map title and text
+			$(document).ready(function() {
+					$('#dataTitle').html(dispTitle)
+					$('#dataText').html( dispData)
+					$('#dataNote').html( '<img src="img/legend.png" alt="Darker areas are High Rank/ Lighter Areas are Low rank Areas">')
+					$('#dataTableNote').html( '<p><h4> Data Table for ' + dispTip + '</h4></p>')
+			});
+			
+			//Load table too !!
+			
+			$(document).ready(function() {
+				$('#dataTable').html( '<table cellpadding="0" cellspacing="0" border="1" class="table table-striped table-bordered" id="example" ></table>' );
+				$('#example').dataTable( {
+					"aaData": [
+					/* Reduced data set */
+					[ points[1].state , points[1].display, points[1].rank ],
+					[ points[2].state , points[2].display, points[2].rank ],
+					[ points[3].state , points[3].display, points[3].rank ],
+					[ points[4].state , points[4].display, points[4].rank ],
+					[ points[5].state , points[5].display, points[5].rank ],
+					[ points[6].state , points[6].display, points[6].rank ],
+					[ points[7].state , points[7].display, points[7].rank ],
+					[ points[8].state , points[8].display, points[8].rank ],
+					[ points[9].state , points[9].display, points[9].rank ],
+					[ points[10].state , points[10].display, points[10].rank ],
+					[ points[11].state , points[11].display, points[11].rank ],
+					[ points[12].state , points[12].display, points[12].rank ],
+					[ points[13].state , points[13].display, points[13].rank ],
+					[ points[14].state , points[14].display, points[14].rank ],
+					[ points[15].state , points[15].display, points[15].rank ],
+					[ points[16].state , points[16].display, points[16].rank ],
+					[ points[17].state , points[17].display, points[17].rank ],
+					[ points[18].state , points[18].display, points[18].rank ],
+					[ points[19].state , points[19].display, points[19].rank ],
+					[ points[20].state , points[20].display, points[20].rank ],
+					[ points[21].state , points[21].display, points[21].rank ],
+					[ points[22].state , points[22].display, points[22].rank ],
+					[ points[23].state , points[23].display, points[23].rank ],
+					[ points[24].state , points[24].display, points[24].rank ],
+					[ points[25].state , points[25].display, points[25].rank ],
+					[ points[26].state , points[26].display, points[26].rank ],
+					[ points[27].state , points[27].display, points[27].rank ],
+					[ points[28].state , points[28].display, points[28].rank ],
+					[ points[29].state , points[29].display, points[29].rank ],
+					[ points[30].state , points[30].display, points[30].rank ],
+					[ points[31].state , points[31].display, points[31].rank ],
+					[ points[32].state , points[32].display, points[32].rank ],
+					[ points[33].state , points[33].display, points[33].rank ],
+					[ points[34].state , points[34].display, points[34].rank ],
+					[ points[35].state , points[35].display, points[35].rank ]
+					
+					],
+				"aaSorting": [[ 2, "asc" ]],
+				"aoColumns": [
+					{ "sTitle": points[0].state },
+					{ "sTitle": points[0].display },
+					{ "sTitle": "Rank" }
+				],
+				 "aLengthMenu": [[10,-1], [10, "All"]]
+			});	
+			});			
+		
+		});
+	}
+
+	
+	
+</script>
+
+</head>
+
+<body onload="loadMap();">
+<div class="container">
+	<div class="row">
+		<div class="span12">
+			<div class="navbar">
+				<div class="navbar-inner">
+					<div class="container-fluid">
+						 <a data-target=".navbar-responsive-collapse" data-toggle="collapse" class="btn btn-navbar"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a> <a href="index.html" class="brand">Know your India</a>
+						<div class="nav-collapse collapse navbar-responsive-collapse">
+							<ul class="nav">
+								<li><a href="index.html">Home</a></li>
+								<li class="active"> <a href="map.html">Maps</a></li>
+								<li><a href="place.html">Places</a></li>
+								<li><a href="diy.html">DIY</a></li>
+								<li><a href="about.html">About</a></li>    
+							</ul>								
+						</div>						
+					</div>
+				</div>				
+			</div>
+			<dl>
+				
+				<dt id="dataTitle">
+				</dt>
+				<dd id="dataText">
+				</dd>
+			</dl>
+		</div>
+	</div>
+	<div class="row">
+		<div class="span2">
+			<ul class="nav nav-list">
+				<li class="nav-header">Datasets For Maps</li>
+				<li><a href='javascript:loadColor("literacy.json")'>Literacy Rate</a></li>
+				<li><a href='javascript:loadColor("pop_den.json")'>Population Density</a></li>
+				<li><a href='javascript:loadColor("rainfall.json")'>Total Rainfall</a></li>
+				<li><a href='javascript:loadColor("poverty.json")'>People Below Poverty Line</a></li>
+				<li><a href='javascript:loadColor("crude_birth.json")'>Crude Birth Rate</a></li>
+				<li><a href='javascript:loadColor("crude_death.json")'>Crude Death rate</a></li>
+				<li><a href='javascript:loadColor("sex_ratio.json")'>Sex Ratio</a></li>
+				<li><a href='javascript:loadColor("vegitation.json")'>Land for Vegitable Growth</a></li>				
+				<li><a href='javascript:loadColor("forest.json")'>Forest Cover</a></li>
+				<li><a href='javascript:loadColor("milk.json")'>Milk Production</a></li>
+			</ul>	
+		</div>
+		
+		<div class="span6">
+			<div id="map" ;></div>
+			<div id="dataNote"><br></div>
+		</div>
+		<div class="span4">
+			<div id="dataTableNote"><br></div>
+			<div id="dataTable"></div>			
+		</div>
+	</div>
+</div>
+</body>
+</html>
